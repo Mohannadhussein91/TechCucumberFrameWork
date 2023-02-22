@@ -13,13 +13,19 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import pageObjects.DashboardPage;
 import pageObjects.HomePage;
+import pageObjects.LoginPage;
 
 public class Steps {
     WebDriver driver;
     HomePage homePage;
+    LoginPage loginPage;
+    DashboardPage dashboardPage;
+    
+    
 	@Given("user is on the Home Page")
-	public void user_is_on_the_home_page() {
+	public void user_is_on_the_home_page() throws InterruptedException {
 		/*
 		 * Starting the Chrome Driver
 		 * 
@@ -44,125 +50,71 @@ public class Steps {
 		// we will call the verify page Logo methods
 		homePage.verifyLogo();
 		// we will call the verify page URl method 
-		homePage.verifyURL();
+		homePage.verifyURL("https://primetech-store-qa.herokuapp.com/");
 		// we will call the verify page title method
 		homePage.verifyTitle();
-		
-
 		
 	}
 	@Given("user clicks on Login button")
 	public void user_clicks_on_login_button() {
+		homePage.clickWelcomeLink();
 		homePage.clickLoginButton();
 		
 	}
 	
 	@Then("user verify Login page URL")
-	public void user_verify_login_page_url() {
-		// Verifying the Login Page URL
-					String actualLoginPageURL = driver.getCurrentUrl();
-					String expectedLoginPageURL = "https://primetech-store-qa.herokuapp.com/login";
-					if (!actualLoginPageURL.equals(expectedLoginPageURL)) {
-						throw new RuntimeException("Login Page URL is not correct");
-					}  
+	public void user_verify_login_page_url() throws InterruptedException {
+	 loginPage = new LoginPage(driver);
+	 loginPage.verifyURL("https://primetech-store-qa.herokuapp.com/login");
+	
 	}
 	
 	
 	@Then("user verify Login Page logo")
 	public void user_verify_login_page_logo() {
-		
-		new WebDriverWait(driver, Duration.ofSeconds(10))
-		.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h2[text()='Login']")));
-		
+		loginPage.verifyPageHeader();
 
 	}
 	
 	
 	@Then("user login with valid credentials")
 	public void user_login_with_valid_credentials() {
-		/*
-		 * Login using a valid credentials: pt_test@gmail.com Test@1234 1. Enter Email
-		 * Address 2. Enter Password 3. Click Login Button
-		 * 
-		 */
-		driver.findElement(By.xpath("//label[text()='Email Address']/..//input")).sendKeys("pt_test@gmail.com");
-		driver.findElement(By.name("password")).sendKeys("Test@1234");
-		driver.findElement(By.xpath("//*[text()='Login']/parent::button")).click();
-	   
+		loginPage.enterEmail("pt_test@gmail.com");
+		loginPage.enterPassword("Test@1234");
+		loginPage.clickLoginButton();
+	
 	}
 	
 	@When("user dashboard is displayed")
 	public void user_dashboard_is_displayed() throws InterruptedException {
+		dashboardPage = new DashboardPage(driver);
+		dashboardPage.verifyURL("https://primetech-store-qa.herokuapp.com/dashboard");
 		
-
-		/*
-		 * Verify Login into the right account 1. Verify url is :
-		 * https://primetech-store-qa.herokuapp.com/dashboard 2. Account Details shows
-		 * as below: email: pt_test@gmail.com accountType: Member FirstName: PT
-		 * LastName: Test
-		 * 
-		 */
-		Thread.sleep(5000);
-		String actualDashBoardURL = driver.getCurrentUrl();
-		String expectedDashBoardURL = "https://primetech-store-qa.herokuapp.com/dashboard";
-		if (!actualDashBoardURL.equals(expectedDashBoardURL)) {
-			throw new RuntimeException("Dashboard Page URL is not correct");
-		}
-	   
 	}
 	@Then("user verify email")
 	public void user_verify_email() {
 		// Verify User Email
-					String actualEmail = driver.findElement(By.xpath("//*[@class='account-details']//*[@class='desc']//p"))
-							.getText().trim();
-					String expectedEmail = "pt_test@gmail.com";
-					if (!actualEmail.equals(expectedEmail)) {
-						throw new RuntimeException("Invalid Email Address: " + actualEmail);
-					}
+		dashboardPage.verifyEmail("pt_test@gmail.com");
+					
 	}
 	@Then("user verify Account type")
 	public void user_verify_account_type() {
-		// Verify User Account Type
-					String actualAccountType = driver
-							.findElement(By.xpath("//*[@class='account-details']//*[@class='desc']//*[contains(@class,'role')]"))
-							.getText().trim();
-					String expectedAccountType = "Member";
-					if (!actualAccountType.equals(expectedAccountType)) {
-						throw new RuntimeException("Invalid Account Type: " + actualAccountType);
-					}
+		dashboardPage.verifyAccountType("Member");
 	   
 	}
 	@Then("user verify First Name")
 	public void user_verify_first_name() {
-		// Verify FirstName 
-		 String actualFirstName= driver.findElement(By.name("firstName")).getDomProperty("value");
-		 String expectedFirstName = "PT";
-		 if(!actualFirstName.equals(expectedFirstName)) {
-			 throw new RuntimeException("Invalid First Name: " + actualFirstName);
-		 }
+		dashboardPage.verifyFirstName("PT");
 	}
 	@Then("user Verify Last Name")
 	public void user_verify_last_name() {
-		
-		 //Verify Lastname
-		 
-		 String actualLastName= driver.findElement(By.name("lastName")).getDomProperty("value");
-		 String expectedLastName = "Test";
-		 if(!actualLastName.equals(expectedLastName)) {
-			 throw new RuntimeException("Invalid Last Name: " + actualLastName);
-		 }
+		dashboardPage.verifyLastName("Test");
 	  
 	}
 	@When("user clicks Logout button")
 	public void user_clicks_logout_button() {
-	   
-		 // Locate the Account Dropdown
-		 String firstName = "PT";
-		 driver.findElement(By.linkText(firstName)).click();
-		 
-		 new WebDriverWait(driver, Duration.ofSeconds(10))
-		 .until(ExpectedConditions.elementToBeClickable(By.xpath("//button[text()='Sign Out']")))
-		 .click();
+	   dashboardPage.clickAccountDropdown("PT");
+	   dashboardPage.clickSignoutButton();
 	}
 	
 	@Then("user closes the browser")

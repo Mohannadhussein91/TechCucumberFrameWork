@@ -13,15 +13,15 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import managers.PageObjectManager;
 import pageObjects.DashboardPage;
 import pageObjects.HomePage;
 import pageObjects.LoginPage;
 
 public class Steps {
     WebDriver driver;
-    HomePage homePage;
-    LoginPage loginPage;
-    DashboardPage dashboardPage;
+   private PageObjectManager pageObjectManager;
+    
     
     
 	@Given("user is on the Home Page")
@@ -44,77 +44,79 @@ public class Steps {
 		 * 	3. Verify Logo: Sporting Goods Shop
 		 */
 		
-		// we will create object of Home Page class
-		homePage = new HomePage(driver);
+		// Initilize Page Object Manager class object
+		
+		pageObjectManager = new PageObjectManager(driver);
+		
+		
 		
 		// we will call the verify page Logo methods
-		homePage.verifyLogo();
+		pageObjectManager.getHomePage().verifyLogo();
 		// we will call the verify page URl method 
-		homePage.verifyURL("https://primetech-store-qa.herokuapp.com/");
+		pageObjectManager.getHomePage().verifyURL("https://primetech-store-qa.herokuapp.com/");
 		// we will call the verify page title method
-		homePage.verifyTitle();
+		pageObjectManager.getHomePage().verifyTitle();
 		
 	}
 	@Given("user clicks on Login button")
 	public void user_clicks_on_login_button() {
-		homePage.clickWelcomeLink();
-		homePage.clickLoginButton();
+		pageObjectManager.getHomePage().clickWelcomeLink();
+		pageObjectManager.getHomePage().clickLoginButton();
 		
 	}
 	
 	@Then("user verify Login page URL")
 	public void user_verify_login_page_url() throws InterruptedException {
-	 loginPage = new LoginPage(driver);
-	 loginPage.verifyURL("https://primetech-store-qa.herokuapp.com/login");
+	 
+		pageObjectManager.getLoginPage().verifyURL("https://primetech-store-qa.herokuapp.com/login");
 	
 	}
 	
 	
 	@Then("user verify Login Page logo")
 	public void user_verify_login_page_logo() {
-		loginPage.verifyPageHeader();
+		pageObjectManager.getLoginPage().verifyPageHeader();
 
 	}
 	
 	
 	@Then("user login with valid credentials")
 	public void user_login_with_valid_credentials() {
-		loginPage.enterEmail("pt_test@gmail.com");
-		loginPage.enterPassword("Test@1234");
-		loginPage.clickLoginButton();
+		pageObjectManager.getLoginPage().enterEmail("pt_test@gmail.com");
+		pageObjectManager.getLoginPage().enterPassword("Test@1234");
+		pageObjectManager.getLoginPage().clickLoginButton();
 	
 	}
 	
 	@When("user dashboard is displayed")
 	public void user_dashboard_is_displayed() throws InterruptedException {
-		dashboardPage = new DashboardPage(driver);
-		dashboardPage.verifyURL("https://primetech-store-qa.herokuapp.com/dashboard");
+		pageObjectManager.getDashboardPage().verifyURL("https://primetech-store-qa.herokuapp.com/dashboard");
 		
 	}
 	@Then("user verify email")
 	public void user_verify_email() {
 		// Verify User Email
-		dashboardPage.verifyEmail("pt_test@gmail.com");
+		pageObjectManager.getDashboardPage().verifyEmail("pt_test@gmail.com");
 					
 	}
 	@Then("user verify Account type")
 	public void user_verify_account_type() {
-		dashboardPage.verifyAccountType("Member");
+		pageObjectManager.getDashboardPage().verifyAccountType("Member");
 	   
 	}
 	@Then("user verify First Name")
 	public void user_verify_first_name() {
-		dashboardPage.verifyFirstName("PT");
+		pageObjectManager.getDashboardPage().verifyFirstName("PT");
 	}
 	@Then("user Verify Last Name")
 	public void user_verify_last_name() {
-		dashboardPage.verifyLastName("Test");
+		pageObjectManager.getDashboardPage().verifyLastName("Test");
 	  
 	}
 	@When("user clicks Logout button")
 	public void user_clicks_logout_button() {
-	   dashboardPage.clickAccountDropdown("PT");
-	   dashboardPage.clickSignoutButton();
+		pageObjectManager.getDashboardPage().clickAccountDropdown("PT");
+		pageObjectManager.getDashboardPage().clickSignoutButton();
 	}
 	
 	@Then("user closes the browser")

@@ -1,41 +1,45 @@
 package stepDefinitions;
 
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.Duration;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import helpers.ConfigFileReader;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import managers.PageObjectManager;
-import pageObjects.DashboardPage;
-import pageObjects.HomePage;
-import pageObjects.LoginPage;
+
 
 public class Steps {
     WebDriver driver;
    private PageObjectManager pageObjectManager;
+   private ConfigFileReader config;
     
     
     
 	@Given("user is on the Home Page")
-	public void user_is_on_the_home_page() throws InterruptedException {
+	public void user_is_on_the_home_page() throws InterruptedException, FileNotFoundException, IOException {
 		/*
 		 * Starting the Chrome Driver
 		 * 
 		 */
 		// Setup Chrome Driver
+		
+		config = new ConfigFileReader();
+		
+		
 		WebDriverManager.chromedriver().setup();
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-		driver.get("https://primetech-store-qa.herokuapp.com/");
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(config.getImplicitlyWait()));
+		driver.get(config.getUrl());
 
 		/*
 		 * Verify the correct Page is loaded
@@ -50,10 +54,13 @@ public class Steps {
 		
 		
 		
+		
+		
+		
 		// we will call the verify page Logo methods
 		pageObjectManager.getHomePage().verifyLogo();
 		// we will call the verify page URl method 
-		pageObjectManager.getHomePage().verifyURL("https://primetech-store-qa.herokuapp.com/");
+		pageObjectManager.getHomePage().verifyURL(config.getUrl());
 		// we will call the verify page title method
 		pageObjectManager.getHomePage().verifyTitle();
 		
@@ -68,7 +75,7 @@ public class Steps {
 	@Then("user verify Login page URL")
 	public void user_verify_login_page_url() throws InterruptedException {
 	 
-		pageObjectManager.getLoginPage().verifyURL("https://primetech-store-qa.herokuapp.com/login");
+		pageObjectManager.getLoginPage().verifyURL(config.getUrl()+"login");
 	
 	}
 	
@@ -90,7 +97,7 @@ public class Steps {
 	
 	@When("user dashboard is displayed")
 	public void user_dashboard_is_displayed() throws InterruptedException {
-		pageObjectManager.getDashboardPage().verifyURL("https://primetech-store-qa.herokuapp.com/dashboard");
+		pageObjectManager.getDashboardPage().verifyURL(config.getUrl()+"dashboard");
 		
 	}
 	@Then("user verify email")

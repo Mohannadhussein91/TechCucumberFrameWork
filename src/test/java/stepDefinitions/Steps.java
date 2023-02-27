@@ -1,7 +1,7 @@
 package stepDefinitions;
 
 
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.time.Duration;
 
@@ -9,37 +9,38 @@ import java.time.Duration;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import helpers.ConfigFileReader;
+
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import managers.FileReaderManager;
 import managers.PageObjectManager;
 
 
 public class Steps {
     WebDriver driver;
    private PageObjectManager pageObjectManager;
-   private ConfigFileReader config;
+   
     
     
     
 	@Given("user is on the Home Page")
-	public void user_is_on_the_home_page() throws InterruptedException, FileNotFoundException, IOException {
+	public void user_is_on_the_home_page() throws InterruptedException, IOException {
 		/*
 		 * Starting the Chrome Driver
 		 * 
 		 */
 		// Setup Chrome Driver
 		
-		config = new ConfigFileReader();
+		
 		
 		
 		WebDriverManager.chromedriver().setup();
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(config.getImplicitlyWait()));
-		driver.get(config.getUrl());
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(FileReaderManager.getInstance().getConfigReader().getImplicitlyWait()));
+		driver.get(FileReaderManager.getInstance().getConfigReader().getUrl());
 
 		/*
 		 * Verify the correct Page is loaded
@@ -60,7 +61,7 @@ public class Steps {
 		// we will call the verify page Logo methods
 		pageObjectManager.getHomePage().verifyLogo();
 		// we will call the verify page URl method 
-		pageObjectManager.getHomePage().verifyURL(config.getUrl());
+		pageObjectManager.getHomePage().verifyURL(FileReaderManager.getInstance().getConfigReader().getUrl());
 		// we will call the verify page title method
 		pageObjectManager.getHomePage().verifyTitle();
 		
@@ -75,7 +76,7 @@ public class Steps {
 	@Then("user verify Login page URL")
 	public void user_verify_login_page_url() throws InterruptedException {
 	 
-		pageObjectManager.getLoginPage().verifyURL(config.getUrl()+"login");
+		pageObjectManager.getLoginPage().verifyURL(FileReaderManager.getInstance().getConfigReader().getUrl()+"login");
 	
 	}
 	
@@ -97,7 +98,7 @@ public class Steps {
 	
 	@When("user dashboard is displayed")
 	public void user_dashboard_is_displayed() throws InterruptedException {
-		pageObjectManager.getDashboardPage().verifyURL(config.getUrl()+"dashboard");
+		pageObjectManager.getDashboardPage().verifyURL(FileReaderManager.getInstance().getConfigReader().getUrl()+"dashboard");
 		
 	}
 	@Then("user verify email")
